@@ -5,34 +5,36 @@ import Categories from '../components/Categories';
 import Carousel from '../components/Carousel';
 import CarouselItem from '../components/CarouselItem';
 import Footer from '../components/Footer';
+import useInitialState from '../hooks/useInitialState';
+
 import '../assets/styles/App.scss';
 
+const API = 'http://localhost:3000/initalState';
 
-const App = () => (
-    <div className="App">
-        <Header />
-        <Search />
+const App = () => {
+  const initialState = useInitialState(API);
 
-        <Categories title = "Mi lista">
-            <Carousel>
-                <CarouselItem />
-            </Carousel>
-        </Categories>
-
-        <Categories title = "Tendencias">
-            <Carousel>
-                <CarouselItem />
-            </Carousel>
-        </Categories>
-
-        <Categories title = "Originales">
-            <Carousel>
-                <CarouselItem />
-            </Carousel>
-        </Categories>
-
-        <Footer />
+  return initialState.length === 0 ? <h1> Cargando... </h1> : (
+    <div className='App'>
+      <Header />
+      <Search />
+      {
+        Object.keys(initialState)
+          .map((category) => {
+            if (initialState[category].length) {
+              return (
+                <Categories key={category} title={category}>
+                  <Carousel>
+                    {initialState[category].map((item) => <CarouselItem key={item.id} {...item} />)}
+                  </Carousel>
+                </Categories>
+              );
+            }
+          })
+      }
+      <Footer />
     </div>
-);
+  );
+};
 
 export default App;
